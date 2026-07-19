@@ -1,0 +1,15 @@
+# 核心依赖（yolo conda 环境已含 torch/ultralytics）
+torch>=2.0
+ultralytics>=8.1
+numpy>=1.24
+pyyaml>=6.0
+
+# 视频/演示（可选）
+opencv-python>=4.8
+
+# 端侧导出（可选）
+onnx>=1.15
+onnxruntime>=1.17
+
+# 测试（可选）
+pytest>=7.0

@@ -1,0 +1,52 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.ipynb_checkpoints/
+
+# ---------- 虚拟环境 ----------
+.venv/
+venv/
+env/
+.conda/
+
+# ---------- 模型权重 / 下载文件（可复现、体积大，默认不入库）----------
+# 如需随提交附带训练好的权重，用: git add -f checkpoints/stgcn_fall.pt
+*.pt
+*.pth
+*.onnx
+*.engine
+*.om
+*.rknn
+yolo11*.pt
+checkpoints/
+
+# ---------- 数据与训练产物 ----------
+data/
+datasets/
+runs/
+outputs/
+*.npz
+*.mp4
+*.avi
+*.mov
+*.jpg
+*.jpeg
+*.png
+
+# ---------- 日志 / 临时 ----------
+*.log
+*.tmp
+*.bak
+.cache/
+
+# ---------- 编辑器 / 系统 ----------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+~$*

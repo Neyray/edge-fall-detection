@@ -1,0 +1,34 @@
+# 端侧跌倒检测 默认配置
+# ------------------------------------------------------------
+pose:
+  weights: yolo11n-pose.pt   # 阶段1：轻量姿态估计（~2.9M 参数）
+  imgsz: 640                 # 算法输入分辨率（相机 1080P+，内部缩放到 640）
+  conf: 0.3                  # 人体检测置信度阈值
+
+temporal:
+  model: stgcn               # stgcn | tcn
+  window: 30                 # 滑动窗口帧数（~1s @30fps）
+  num_class: 2               # 0=日常 1=跌倒
+  ckpt: checkpoints/stgcn_fall.pt
+
+fusion:
+  stgcn_weight: 0.6          # 时序模型权重
+  geo_weight: 0.4            # 几何先验权重
+
+postprocess:
+  prob_thr: 0.6              # 单帧融合概率阈值
+  vote_window: 9             # 滑动投票窗口
+  vote_ratio: 0.6            # 投票通过比例
+  lie_seconds: 1.5           # 维持倒地多久确认为真实跌倒（抑制坐下/弯腰误报）
+  recover_frames: 15         # 起身多少帧后解除报警
+
+runtime:
+  fps: 30
+  device: cuda               # cuda | cpu
+
+# 赛题硬性红线（benchmark.py 据此核对）
+limits:
+  params_M: 20
+  fp32_MB: 80
+  latency_ms: 100
+  npu_MB: 20
