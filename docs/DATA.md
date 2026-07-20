@@ -1,67 +1,60 @@
-# 数据准备说明
+# 数据准备参考
 
-赛题方案文档里给的是公开数据集参考链接，但视频文件没有随仓库一起提供。公开视频、
-自采视频和抽取后的骨骼片段都建议放在 `data/` 下；该目录默认被 git 忽略，避免把大文件提交进仓库。
+> 本文件只讲**数据放哪、什么格式、去哪下**。
+> "先做什么、后做什么"的完整操作流程见根目录 **[START_HERE.md](../START_HERE.md)** 第 4 节。
 
-## 初赛推荐路径
+视频文件不随仓库提供。`data/` 默认被 git 忽略，大文件不要提交进仓库。
 
-初赛不需要一上来下载和处理全量数据，先做一份小而均衡的验证集更划算：
+## 1. 目录格式（约定）
 
-1. 先准备少量样本：
-   - 跌倒视频：20 到 50 段；
-   - 日常动作负样本：40 到 100 段，包括快速坐下、弯腰捡物、蹲下、躺下、走过镜头；
-   - 如果方便，再补 5 到 10 段微光、遮挡、侧视角样本。
-2. 按下面目录放视频：
+原始视频按类别分两个文件夹：
 
 ```text
 data/raw/
-  fall/*.mp4
-  adl/*.mp4
+  fall/*.mp4     # 跌倒视频
+  adl/*.mp4      # 日常动作视频（坐下/弯腰/下蹲/躺下/走动等）
 ```
 
-3. 抽取骨骼窗口：
+抽骨骼后得到滑动窗口 `.npz`，训练/验证分开放：
 
-```bash
-conda activate yolo
-python scripts/extract_skeletons.py --videos data/raw --out data/skeletons/train
+```text
+data/skeletons/
+  train/*.npz
+  val/*.npz
+  sample/*.npz   # make_synthetic_skeletons.py 生成，仅链路自测，非真实数据
 ```
 
-4. 划分一部分窗口或视频作为验证集，然后训练和评测：
+## 2. 初赛需要多少数据
 
-```bash
-python scripts/train_temporal.py --data data/skeletons/train --val data/skeletons/val --epochs 15
-python scripts/evaluate_temporal.py --data data/skeletons/val --ckpt checkpoints/stgcn_fall.pt
-python scripts/export_onnx.py --stage temporal --ckpt checkpoints/stgcn_fall.pt
-```
+一份**小而均衡**的验证集即可，不必下载全量：
 
-## 公开数据集说明
+- 跌倒：20~50 段
+- 日常动作强负样本：40~100 段（快速坐下、弯腰捡物、下蹲、躺下、走过镜头）
+- 有条件再补 5~10 段：微光、遮挡、侧视角
 
-### Kaggle fall-video-dataset
+> 关键不是数量多，而是**覆盖易混动作**——这正是赛题最看重的"区分跌倒 vs 坐/弯腰"。
 
-Kaggle 通常需要账号 token。把 `kaggle.json` 放到 `~/.kaggle/kaggle.json` 后执行：
+## 3. 公开数据集怎么下
+
+### Kaggle · fall-video-dataset
+需要 Kaggle 账号 token（`~/.kaggle/kaggle.json`）：
 
 ```bash
 chmod 600 ~/.kaggle/kaggle.json
 conda activate yolo
-kaggle datasets download -d payutch/fall-video-dataset -p data/downloads/kaggle --unzip
-find data/downloads/kaggle -type f \( -iname '*.mp4' -o -iname '*.avi' -o -iname '*.mov' \)
+pip install kaggle
+kaggle datasets download -d payutch/fall-video-dataset -p data/downloads --unzip
+find data/downloads -type f \( -iname '*.mp4' -o -iname '*.avi' -o -iname '*.mov' \)
 ```
+下完从结果里**挑一小部分均衡样本**，复制到 `data/raw/fall` 与 `data/raw/adl`。
 
-然后从下载结果里挑一小部分均衡样本，复制或软链接到 `data/raw/fall` 和 `data/raw/adl`，
-再运行 `extract_skeletons.py`。
+### HuggingFace · simplexsigil2/omnifall
+适合查看标签和元数据；完整视频体积大，**初赛不要一开始就拉全量**，先把本地链路跑顺再按需下子集。
 
-### HuggingFace simplexsigil2/omnifall
+## 4. 自采数据（推荐，最快且算加分项）
 
-HuggingFace 页面适合查看标签和元数据，完整视频体积可能较大。不要为了初赛一开始就拉全量；
-先把本地训练、评测、导出链路跑顺，再按需要下载子集。
+手机横屏拍 3~8 秒短片，按上面第 2 节的数量和类别分好，直接放进 `data/raw/fall` 与 `data/raw/adl` 即可，无需账号。假摔请往床垫/沙发上做，注意安全。
 
-## 合成数据自测
+## 5. 合成数据的定位
 
-只做工程链路自测时可以运行：
-
-```bash
-python scripts/make_synthetic_skeletons.py --out data/skeletons/sample --samples 40
-python scripts/evaluate_temporal.py --data data/skeletons/sample --ckpt checkpoints/stgcn_fall.pt
-```
-
-注意：合成数据指标不能当作真实准确率写进 PPT。可以标注为“工程链路自测”，真实效果要用公开视频或自采视频验证。
+`make_synthetic_skeletons.py` 生成的是程序模拟骨骼，**只用于验证训练/评测链路能不能跑通**。它的指标（常见 accuracy=1.0）**不能写成真实精度**，PPT 里只能标注为"工程链路自测"。真实效果必须来自公开视频或自采视频验证集。
