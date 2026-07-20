@@ -28,6 +28,8 @@ checkpoints/
 # ---------- 数据与训练产物 ----------
 data/
 datasets/
+!src/datasets/
+!src/datasets/*.py
 runs/
 outputs/
 *.npz

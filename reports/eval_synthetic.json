@@ -1,0 +1,21 @@
+{
+  "samples": 512,
+  "accuracy": 1.0,
+  "recall": 1.0,
+  "precision": 1.0,
+  "f1": 1.0,
+  "false_positive_rate": 0.0,
+  "false_negative_rate": 0.0,
+  "confusion": {
+    "tp": 256,
+    "fp": 0,
+    "tn": 256,
+    "fn": 0
+  },
+  "temporal_latency_ms_per_window": 0.5610913125009276,
+  "device": "cpu",
+  "checkpoint": "checkpoints/stgcn_fall.pt",
+  "data": "synthetic:512",
+  "window": 30,
+  "model_params_M": 0.158056
+}

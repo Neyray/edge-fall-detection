@@ -83,6 +83,24 @@ python scripts/export_onnx.py --stage pose      --weights yolo11n-pose.pt
 > 桌面 GPU 时延仅供比例参考；端侧 NPU（海思/瑞芯微）真实时延需目标板量化后实测。
 > 全部两阶段合计参数仅占 20M 预算的 ~15%，为后续换用更强姿态主干留足空间。
 
+## 4.1 当前可复现闭环
+
+本仓库现在提供两条验证路径：
+
+```bash
+conda activate yolo
+
+# 合成骨骼数据：只用于验证训练/评测链路，不代表真实精度
+python scripts/train_temporal.py --synthetic 512 --epochs 8 --bs 64
+python scripts/evaluate_temporal.py --synthetic 512 --ckpt checkpoints/stgcn_fall.pt --out reports/eval_synthetic.json
+python scripts/export_onnx.py --stage temporal --ckpt checkpoints/stgcn_fall.pt
+
+# .npz 数据目录模式：公开视频或自采视频抽骨骼后也走这条路径
+python scripts/make_synthetic_skeletons.py --out data/skeletons/sample --samples 40
+python scripts/evaluate_temporal.py --data data/skeletons/sample --ckpt checkpoints/stgcn_fall.pt --out reports/eval_sample_npz.json
+```
+
+真实数据准备见 [docs/DATA.md](docs/DATA.md)。初赛 PPT 中建议把合成结果标注为“链路自测”，真实效果必须来自公开视频/自采视频验证集。
 ## 5. 参考
 
 - 数据集：[omnifall](https://huggingface.co/datasets/simplexsigil2/omnifall) · [fall-video-dataset](https://www.kaggle.com/datasets/payutch/fall-video-dataset)

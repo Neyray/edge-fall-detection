@@ -13,3 +13,7 @@ onnxruntime>=1.17
 
 # 测试（可选）
 pytest>=7.0
+# 公开数据下载（可选）
+huggingface_hub>=1.0
+datasets>=5.0
+kaggle>=1.7
