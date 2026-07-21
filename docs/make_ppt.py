@@ -190,7 +190,8 @@ items = [("01","赛题背景与场景痛点"),("02","三大技术挑战与硬性
          ("05","阶段一 · 轻量骨骼提取"),("06","阶段二 · 时序判别 ST-GCN"),
          ("07","几何先验与状态机降误报"),("08","针对痛点的专属优化"),
          ("09","长尾泛化与数据增强"),("10","创新性 · 对比业界"),
-         ("11","实测结果与合规核对"),("12","端侧部署与落地价值")]
+         ("11","实测结果与合规核对"),("12","真实数据验证与消融"),
+         ("13","端侧部署与落地价值")]
 for i,(n,t) in enumerate(items):
     col = i % 2; row = i // 2
     x = 0.9 + col*6.1; y = 1.95 + row*0.82
@@ -474,7 +475,7 @@ footer(s)
 # 13 实测结果与合规核对（评分维度1）
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 11, "实测结果与合规核对", "RTX 5070 Ti · torch 2.11+cu128 · 已端到端跑通（tests + benchmark）")
+y = header(s, 11, "实测结果与合规核对", "参数/权重合规达标 · 时延为参考值 · 检测精度见下页真实验证")
 # 四个红线达标 chip
 comp=[("3.03 M","总参数 ≤20M","15% 占用",OKGRN),
       ("12.1 MB","fp32 ≤80MB","达标",OKGRN),
@@ -510,10 +511,64 @@ text(s, "* 桌面 GPU 时延仅供比例参考；端侧 NPU(海思/瑞芯微)真
 footer(s)
 
 # ======================================================================
+# 13b 真实数据验证与消融（评分维度1/3）
+# ======================================================================
+s = slide(WHITE)
+y = header(s, 12, "真实数据验证与消融", "Kaggle payutch/fall-video-dataset 真实骨骼 · 按片段划分(零泄漏) · CPU 实测")
+
+# 上排左：数据划分
+text(s, "数据划分（按视频片段划分，同一片段不跨集）", 0.7, y, 6, 0.32, size=13.5, color=DEEP, bold=True)
+split=[("数据来源","Kaggle 真实视频抽取骨骼 6988 段"),
+       ("训练集","跌倒 1200 + 日常 1200 段 → 8122 窗口(均衡)"),
+       ("验证集","跌倒 300 + 日常 300 段 → 2100 窗口(均衡)")]
+for i,(a,b) in enumerate(split):
+    yy=y+0.37+i*0.44
+    rect(s, 0.7, yy, 5.95, 0.40, fill=CARD, rounded=True, rad=0.06)
+    text(s, a, 0.85, yy, 1.5, 0.40, size=11.5, color=DEEP, bold=True, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, b, 2.35, yy, 4.25, 0.40, size=11, color=INK, anchor=MSO_ANCHOR.MIDDLE)
+
+# 上排右：阶段2窗口级指标
+text(s, "阶段2 时序头 · 窗口级", 6.95, y, 5.6, 0.32, size=13.5, color=DEEP, bold=True)
+wl=[("0.844","准确率"),("0.840","召回率"),("0.847","精确率"),("0.844","F1")]
+for i,(n,l) in enumerate(wl):
+    x=6.95+i*1.47
+    rect(s, x, y+0.37, 1.37, 0.98, fill="EAF3EE", rounded=True, rad=0.08)
+    text(s, n, x, y+0.5, 1.37, 0.5, size=18, color=DEEP, bold=True, align=PP_ALIGN.CENTER, font=TITLE_FONT)
+    text(s, l, x, y+1.04, 1.37, 0.28, size=10.5, color=MUTED, align=PP_ALIGN.CENTER)
+
+# 下排：事件级(片段级)消融表
+text(s, "事件级消融（以视频片段为单位 —— 赛题评测协议）", 0.7, y+1.82, 9, 0.32, size=13.5, color=DEEP, bold=True)
+ty=y+2.18
+th=["配置","召回率","精确率","误报率","F1"]
+cols=[0.7,5.3,7.2,9.1,11.2]; cw=[4.5,1.8,1.8,2.0,1.45]
+for j,h in enumerate(th):
+    rect(s, cols[j], ty, cw[j], 0.42, fill=DEEP)
+    text(s, h, cols[j]+0.1, ty, cw[j]-0.15, 0.42, size=12, color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+abl=[("仅 ST-GCN","0.997","0.634","0.573","0.775",False),
+     ("仅 几何先验","0.843","0.797","0.213","0.820",False),
+     ("融合（无状态机）","0.987","0.822","0.213","0.897",False),
+     ("融合 + 状态机（倒地≥0.15s）","0.886","0.858","0.147","0.872",True),
+     ("融合 + 状态机（倒地≥0.4s）","0.722","0.857","0.120","0.784",False)]
+for i,r in enumerate(abl):
+    yy=ty+0.42+i*0.42
+    hi=r[5]
+    bg = "FBF4E6" if hi else (WHITE if i%2==0 else CARD)
+    for j in range(5):
+        rect(s, cols[j], yy, cw[j], 0.42, fill=bg, line=LINE, lw=0.5)
+        al = PP_ALIGN.LEFT if j==0 else PP_ALIGN.CENTER
+        text(s, r[j], cols[j]+(0.12 if j==0 else 0), yy, cw[j]-(0.15 if j==0 else 0), 0.42,
+             size=11, color=(GOLD if hi and j==0 else INK), bold=hi, align=al, anchor=MSO_ANCHOR.MIDDLE)
+rect(s, 0.7, ty+2.60, 11.95, 0.44, fill="EAF3EE", rounded=True, rad=0.06)
+text(s, [[("几何融合 误报率 0.57→0.21，", {"color":OKGRN,"bold":True,"size":12}),
+          ("状态机再降至 0.12–0.15 且「召回↔误报」可调 —— 每个模块的价值均被验证。", {"color":INK,"size":12})]],
+     0.95, ty+2.60, 11.5, 0.44, anchor=MSO_ANCHOR.MIDDLE)
+footer(s)
+
+# ======================================================================
 # 14 部署与落地（评分维度4）
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 12, "端侧部署链路与落地价值")
+y = header(s, 13, "端侧部署链路与落地价值")
 steps=[("导出 ONNX","两阶段 opset12\n算子规整"),
        ("厂商工具转换","海思 ATC→.om\n瑞芯微 →.rknn"),
        ("INT8 量化","权重/激活量化\nNPU 加速"),

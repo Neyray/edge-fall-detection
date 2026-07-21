@@ -92,6 +92,16 @@ python scripts/run_demo.py --synthetic   # 合成一段「站立->跌倒」，�
 > 时延为桌面参考值，仅供比例说明；端侧 NPU（海思/瑞芯微）真实时延需目标板量化后实测。
 > 两阶段合计参数仅占 20M 预算 ~15%，为升级更强姿态主干留足空间。
 
+## 4.1 真实数据检测效果（Kaggle 骨骼验证集）
+
+在 `payutch/fall-video-dataset` 真实骨骼上，按视频片段划分（零泄漏）+ 类别均衡后：
+
+- **阶段2 时序头（窗口级）**：准确率 0.844 / 召回 0.840 / 精确 0.847 / F1 0.844
+- **事件级消融**：几何融合把误报率 0.573→0.213，状态机再降到 0.12–0.15，"召回↔误报"可调
+
+完整数据划分表与消融表见 [docs/SOLUTION.md](docs/SOLUTION.md) 第五节；复现流程见 [START_HERE.md](START_HERE.md)。
+相关脚本：`scripts/csv2npz.py`（CSV→窗口）、`prepare_real.py`（选片+划分）、`ablation.py`（事件级消融）。
+
 ## 5. 参考
 
 - 数据集：[omnifall](https://huggingface.co/datasets/simplexsigil2/omnifall) · [fall-video-dataset](https://www.kaggle.com/datasets/payutch/fall-video-dataset)
