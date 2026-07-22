@@ -161,6 +161,12 @@ text(s, "面向低算力端侧平台的\n实时跌倒检测", 0.8, 1.9, 8.6, 1.9
      color=WHITE, bold=True, font=TITLE_FONT, spacing=1.05)
 text(s, "端到端纯视觉方案：YOLO-Pose 轻量骨骼  +  Lite ST-GCN 时序判别  +  几何先验后融合",
      0.85, 3.95, 8.2, 0.8, size=16, color="AECBDC")
+# 成果高亮条（开场即亮真实结果）
+rect(s, 0.85, 4.68, 7.9, 0.6, fill="123A2E", rounded=True, rad=0.12)
+text(s, [[("✓ 真实视频端到端实测　", {"color":"6FD6B4","bold":True,"size":13.5}),
+          ("跌倒召回 ", {"color":"9FBACB","size":13}), ("0.875", {"color":WHITE,"bold":True,"size":18}),
+          ("　·　误报 ", {"color":"9FBACB","size":13}), ("0.125", {"color":WHITE,"bold":True,"size":18})]],
+     1.15, 4.68, 7.4, 0.6, anchor=MSO_ANCHOR.MIDDLE)
 # 底部信息条
 rect(s, 0.85, 5.5, 7.9, 0.9, fill="12314A", rounded=True, rad=0.1)
 text(s, [[("队伍  ", {"color":"8FB6CC"}), ("Ray", {"color":WHITE,"bold":True,"size":17})]],
@@ -188,10 +194,10 @@ text(s, "CONTENTS", 0.63, 1.2, 4, 0.3, size=12, color=TEAL, bold=True)
 items = [("01","赛题背景与场景痛点"),("02","三大技术挑战与硬性红线"),
          ("03","核心思路：骨骼中间表征"),("04","端到端总体架构"),
          ("05","阶段一 · 轻量骨骼提取"),("06","阶段二 · 时序判别 ST-GCN"),
-         ("07","几何先验与状态机降误报"),("08","针对痛点的专属优化"),
-         ("09","长尾泛化与数据增强"),("10","创新性 · 对比业界"),
-         ("11","实测结果与合规核对"),("12","真实数据验证与消融"),
-         ("13","端到端实测 · Demo"),("14","端侧部署与落地价值")]
+         ("07","几何先验与状态机降误报"),("08","端到端实测 · Demo"),
+         ("09","针对痛点的专属优化"),("10","长尾泛化与数据增强"),
+         ("11","创新性 · 对比业界"),("12","实测结果与合规核对"),
+         ("13","真实数据验证与消融"),("14","端侧部署与落地价值")]
 for i,(n,t) in enumerate(items):
     col = i % 2; row = i // 2
     x = 0.9 + col*6.1; y = 1.95 + row*0.82
@@ -273,11 +279,15 @@ for i,(t,d,col) in enumerate(flow):
         text(s, "→", x+3.75, 2.65, 0.4, 2.3, size=28, color="6FB4D6", bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
 text(s, "这一「表征降维」是同时满足检测精度与端侧算力约束的关键——不在像素域堆叠昂贵的 3D 时序网络。",
      0.7, 5.35, 12, 0.6, size=15, color="D6E4EE", italic=True)
-# 底部收益
-for i,(n,lb) in enumerate([("解耦","跨域(红外/可见光)天然鲁棒"),("轻量","时序成本降至毫秒级"),("可解释","几何判据便于调参")]):
-    x=0.7+i*4.15
-    text(s, [[("✓  ", {"color":"6FD6B4","bold":True,"size":15}), (n+"：", {"color":WHITE,"bold":True}),
-              (lb,{"color":"AECBDC"})]], x, 6.2, 4.0, 0.4, size=13.5)
+# 底部：思路 → 结果（把设计直接连到实测数字）
+rect(s, 0.7, 6.02, 12.0, 0.74, fill="123A2E", rounded=True, rad=0.09)
+maps=[("骨骼解耦","跨域长尾鲁棒"),("时序轻量","3M 参数 / <2ms"),
+      ("几何+状态机","误报 0.57→0.15、召回 0.875")]
+for i,(a,b) in enumerate(maps):
+    x=0.9+i*3.98
+    text(s, [[(a, {"color":"6FD6B4","bold":True,"size":13.5}), ("  →  ", {"color":"E8A05A","bold":True,"size":14}),
+              (b, {"color":WHITE,"bold":True,"size":13.5})]],
+         x, 6.02, 3.9, 0.74, anchor=MSO_ANCHOR.MIDDLE)
 footer(s, dark=True)
 
 # ======================================================================
@@ -398,10 +408,46 @@ text(s, "只有「先下坠 + 持续倒地 ≥1.5s」才确认——\n快速坐�
 footer(s)
 
 # ======================================================================
-# 10 针对痛点的专属优化（评分维度2）
+# 08 端到端实测 Demo（评分维度1）—— 方法之后立刻"眼见为实"
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 8, "针对三大痛点的专属优化")
+y = header(s, 8, "端到端实测 · Demo", "完整链路 YOLO-Pose → ST-GCN → 几何先验 → 状态机，在真实视频上跑通（CPU 4线程实测）")
+
+_ASSET = "/home/jerico/projects/edge-fall-detectioin/reports/demo_frames"
+iw, ih = 5.95, 3.35
+# 左图：跌倒 → 报警
+s.shapes.add_picture(os.path.join(_ASSET, "fall_alarm.png"), Inches(0.55), Inches(y+0.32), width=Inches(iw))
+rect(s, 0.55, y+0.32, iw, ih, fill=None, line=ALARM, lw=2.2)
+# 右图：躺床 → 不报警
+s.shapes.add_picture(os.path.join(_ASSET, "adl_normal.png"), Inches(6.83), Inches(y+0.32), width=Inches(iw))
+rect(s, 6.83, y+0.32, iw, ih, fill=None, line=OKGRN, lw=2.2)
+
+# 图注
+cy = y+0.32+ih+0.10
+rect(s, 0.55, cy, iw, 0.58, fill="FBEEE8", rounded=True, rad=0.06)
+text(s, [[("跌倒 → 触发报警　", {"color":ALARM,"bold":True,"size":13}),
+          ("状态机确认「下坠 + 持续倒地」后报警", {"color":INK,"size":11.5})]],
+     0.72, cy, iw-0.3, 0.58, anchor=MSO_ANCHOR.MIDDLE)
+rect(s, 6.83, cy, iw, 0.58, fill="EAF3EE", rounded=True, rad=0.06)
+text(s, [[("躺床休息 → 不报警　", {"color":OKGRN,"bold":True,"size":13}),
+          ("横躺≠跌倒，需事件动态判别", {"color":INK,"size":11.5})]],
+     7.00, cy, iw-0.3, 0.58, anchor=MSO_ANCHOR.MIDDLE)
+
+# 底部结果条
+by = cy+0.72
+rect(s, 0.55, by, 12.23, 0.60, fill=DEEP, rounded=True, rad=0.06)
+text(s, [[("真实视频 16 段实测：", {"color":"CFE0EA","size":13}),
+          ("跌倒 7/8 报警（召回 0.875）", {"color":WHITE,"bold":True,"size":14}),
+          ("　·　日常 1/8 误报　·　完整链路在真实视频上端到端跑通，跌倒事件级检测可靠（详细指标见后）",
+           {"color":"CFE0EA","size":12}) ]],
+     0.85, by, 11.6, 0.60, anchor=MSO_ANCHOR.MIDDLE)
+footer(s)
+
+# ======================================================================
+# 09 针对痛点的专属优化（评分维度2）
+# ======================================================================
+s = slide(WHITE)
+y = header(s, 9, "针对三大痛点的专属优化")
 rows=[("动作混淆", ALARM, "运动轨迹建模(ST-GCN) + 「下坠+持续倒地」状态机 + 几何躯干角，三重约束区分日常动作"),
       ("端侧算力", GOLD, "骨骼中间表征把时序成本降至<2ms；两阶段合计 3M/12MB；提供 TCN / ONNX / INT8 部署路径"),
       ("长尾泛化", TEAL, "①骨骼对光照纹理解耦 ②红外/微光合成+遮挡丢弃+镜像换视角+时间缩放 ③几何先验兜底")]
@@ -418,7 +464,7 @@ footer(s)
 # 11 长尾泛化与数据增强
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 9, "长尾泛化与数据增强", "公开数据以可见光为主 —— 训练期「合成」红外与恶劣场景，零采集成本")
+y = header(s, 10, "长尾泛化与数据增强", "公开数据以可见光为主 —— 训练期「合成」红外与恶劣场景，零采集成本")
 img_aug=[("类红外合成","转灰度+伽马，模拟热成像"),("微光/夜间","整体压暗+传感器噪声")]
 skel_aug=[("关键点遮挡","随机清零若干点置信度"),("左右镜像换视角","水平翻转+左右点交换"),
           ("坐标抖动","模拟定位噪声"),("时间尺度缩放","模拟跌倒快慢差异")]
@@ -445,7 +491,7 @@ footer(s)
 # 12 创新性 · 对比业界（评分维度3）
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 10, "创新性与先进性 · 对比业界")
+y = header(s, 11, "创新性与先进性 · 对比业界")
 # 对比表
 text(s, "对比公开单阶段方案（LFD-YOLO / BMR-YOLO / YOLO-fall）", 0.7, y, 8, 0.4, size=14.5, color=MUTED, bold=True)
 th=["维度","业界单阶段端到端","本方案（两阶段+骨骼）"]
@@ -475,7 +521,7 @@ footer(s)
 # 13 实测结果与合规核对（评分维度1）
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 11, "实测结果与合规核对", "参数/权重合规达标 · 时延为参考值 · 检测精度见下页真实验证")
+y = header(s, 12, "实测结果与合规核对", "参数/权重合规达标 · 时延为参考值 · 检测精度见下页真实验证")
 # 四个红线达标 chip
 comp=[("3.03 M","总参数 ≤20M","15% 占用",OKGRN),
       ("12.1 MB","fp32 ≤80MB","达标",OKGRN),
@@ -514,7 +560,7 @@ footer(s)
 # 13b 真实数据验证与消融（评分维度1/3）
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 12, "真实数据验证与消融", "Kaggle payutch/fall-video-dataset 真实骨骼 · 按片段划分(零泄漏) · CPU 实测")
+y = header(s, 13, "真实数据验证与消融", "Kaggle payutch/fall-video-dataset 真实骨骼 · 按片段划分(零泄漏) · CPU 实测")
 
 # 上排左：数据划分
 text(s, "数据划分（按视频片段划分，同一片段不跨集）", 0.7, y, 6, 0.32, size=13.5, color=DEEP, bold=True)
@@ -565,42 +611,6 @@ text(s, [[("几何融合 误报率 0.57→0.21，", {"color":OKGRN,"bold":True,"
 footer(s)
 
 # ======================================================================
-# 13c 端到端实测 Demo（评分维度1）
-# ======================================================================
-s = slide(WHITE)
-y = header(s, 13, "端到端实测 · Demo", "完整链路 YOLO-Pose → ST-GCN → 几何先验 → 状态机，在真实视频上跑通（CPU 4线程实测）")
-
-_ASSET = "/home/jerico/projects/edge-fall-detectioin/reports/demo_frames"
-iw, ih = 5.95, 3.35
-# 左图：跌倒 → 报警
-s.shapes.add_picture(os.path.join(_ASSET, "fall_alarm.png"), Inches(0.55), Inches(y+0.32), width=Inches(iw))
-rect(s, 0.55, y+0.32, iw, ih, fill=None, line=ALARM, lw=2.2)
-# 右图：躺床 → 不报警
-s.shapes.add_picture(os.path.join(_ASSET, "adl_normal.png"), Inches(6.83), Inches(y+0.32), width=Inches(iw))
-rect(s, 6.83, y+0.32, iw, ih, fill=None, line=OKGRN, lw=2.2)
-
-# 图注
-cy = y+0.32+ih+0.10
-rect(s, 0.55, cy, iw, 0.58, fill="FBEEE8", rounded=True, rad=0.06)
-text(s, [[("跌倒 → 触发报警　", {"color":ALARM,"bold":True,"size":13}),
-          ("状态机确认「下坠 + 持续倒地」后报警", {"color":INK,"size":11.5})]],
-     0.72, cy, iw-0.3, 0.58, anchor=MSO_ANCHOR.MIDDLE)
-rect(s, 6.83, cy, iw, 0.58, fill="EAF3EE", rounded=True, rad=0.06)
-text(s, [[("躺床休息 → 不报警　", {"color":OKGRN,"bold":True,"size":13}),
-          ("横躺≠跌倒，需事件动态判别", {"color":INK,"size":11.5})]],
-     7.00, cy, iw-0.3, 0.58, anchor=MSO_ANCHOR.MIDDLE)
-
-# 底部结果条
-by = cy+0.72
-rect(s, 0.55, by, 12.23, 0.60, fill=DEEP, rounded=True, rad=0.06)
-text(s, [[("真实视频 16 段实测：", {"color":"CFE0EA","size":13}),
-          ("跌倒 7/8 报警（召回 0.875）", {"color":WHITE,"bold":True,"size":14}),
-          ("　·　日常 1/8 误报　·　端到端结果与骨骼消融一致，验证整条流水线在原始视频上有效",
-           {"color":"CFE0EA","size":12}) ]],
-     0.85, by, 11.6, 0.60, anchor=MSO_ANCHOR.MIDDLE)
-footer(s)
-
-# ======================================================================
 # 14 部署与落地（评分维度4）
 # ======================================================================
 s = slide(WHITE)
@@ -639,7 +649,7 @@ kicker(s, "总结  SUMMARY", 0.6, 1.0, color="6FB4D6")
 text(s, "轻量 · 实时 · 鲁棒 · 可落地", 0.6, 1.5, 12, 0.9, size=36, color=WHITE, bold=True, font=TITLE_FONT)
 pts=[("骨骼中间表征","化解跨域与算力两难，从根源提升长尾鲁棒性"),
      ("学习+规则+事件三级融合","ST-GCN 时序 + 几何先验 + 状态机，稳、准、可解释"),
-     ("全面达标","3M 参数 / 12MB / 端到端毫秒级，远低于红线，代码已跑通"),
+     ("真实数据验证 + 全面达标","真实视频端到端 召回0.875/误报0.125；3M/12MB 远低于红线，代码已跑通"),
      ("端侧闭环落地","ONNX→NPU 部署链路完整，隐私安全、本地实时报警")]
 for i,(a,b) in enumerate(pts):
     yy=2.75+i*0.85
