@@ -1,0 +1,11 @@
+{
+  "videos": 16,
+  "fall": 8,
+  "adl": 8,
+  "fall_alarmed": 7,
+  "adl_false_alarm": 1,
+  "recall": 0.875,
+  "false_positive_rate": 0.125,
+  "lie_seconds": 0.2,
+  "note": "完整端到端(YOLO-Pose→ST-GCN→几何→状态机) 在真实视频上，CPU 4线程"
+}

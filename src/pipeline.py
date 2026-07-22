@@ -33,12 +33,13 @@ class FallDetector:
                  temporal_ckpt: str | None = None, device: str = "cpu",
                  window: int = 30, fps: float = 30.0,
                  stgcn_weight: float = 0.6, geo_weight: float = 0.4,
-                 dummy_pose: bool = False):
+                 dummy_pose: bool = False, fsm_kwargs: dict | None = None):
         self.device = device
         self.window = window
         self.fps = fps
         self.stgcn_weight = stgcn_weight
         self.geo_weight = geo_weight
+        self.fsm_kwargs = fsm_kwargs or {}
 
         self.pose = PoseExtractor(pose_weights, device=device, dummy=dummy_pose)
         self.temporal = LiteSTGCN(num_class=2).to(device).eval()
@@ -72,7 +73,7 @@ class FallDetector:
             tid = p.track_id if p.track_id >= 0 else 0
             tr = self.tracks[tid]
             if tr.fsm is None:
-                tr.fsm = FallStateMachine(fps=self.fps)
+                tr.fsm = FallStateMachine(fps=self.fps, **self.fsm_kwargs)
 
             norm = normalize_keypoints(p.keypoints, p.bbox)
             tr.norm_kp.append(norm)
@@ -90,6 +91,7 @@ class FallDetector:
             results.append({
                 "track_id": tid,
                 "bbox": p.bbox.tolist(),
+                "keypoints": p.keypoints.tolist(),
                 "stgcn_prob": stgcn_prob,
                 "geo_score": geo["score"],
                 "fused_prob": fused,

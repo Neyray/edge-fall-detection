@@ -191,7 +191,7 @@ items = [("01","赛题背景与场景痛点"),("02","三大技术挑战与硬性
          ("07","几何先验与状态机降误报"),("08","针对痛点的专属优化"),
          ("09","长尾泛化与数据增强"),("10","创新性 · 对比业界"),
          ("11","实测结果与合规核对"),("12","真实数据验证与消融"),
-         ("13","端侧部署与落地价值")]
+         ("13","端到端实测 · Demo"),("14","端侧部署与落地价值")]
 for i,(n,t) in enumerate(items):
     col = i % 2; row = i // 2
     x = 0.9 + col*6.1; y = 1.95 + row*0.82
@@ -565,10 +565,46 @@ text(s, [[("几何融合 误报率 0.57→0.21，", {"color":OKGRN,"bold":True,"
 footer(s)
 
 # ======================================================================
+# 13c 端到端实测 Demo（评分维度1）
+# ======================================================================
+s = slide(WHITE)
+y = header(s, 13, "端到端实测 · Demo", "完整链路 YOLO-Pose → ST-GCN → 几何先验 → 状态机，在真实视频上跑通（CPU 4线程实测）")
+
+_ASSET = "/home/jerico/projects/edge-fall-detectioin/reports/demo_frames"
+iw, ih = 5.95, 3.35
+# 左图：跌倒 → 报警
+s.shapes.add_picture(os.path.join(_ASSET, "fall_alarm.png"), Inches(0.55), Inches(y+0.32), width=Inches(iw))
+rect(s, 0.55, y+0.32, iw, ih, fill=None, line=ALARM, lw=2.2)
+# 右图：躺床 → 不报警
+s.shapes.add_picture(os.path.join(_ASSET, "adl_normal.png"), Inches(6.83), Inches(y+0.32), width=Inches(iw))
+rect(s, 6.83, y+0.32, iw, ih, fill=None, line=OKGRN, lw=2.2)
+
+# 图注
+cy = y+0.32+ih+0.10
+rect(s, 0.55, cy, iw, 0.58, fill="FBEEE8", rounded=True, rad=0.06)
+text(s, [[("跌倒 → 触发报警　", {"color":ALARM,"bold":True,"size":13}),
+          ("状态机确认「下坠 + 持续倒地」后报警", {"color":INK,"size":11.5})]],
+     0.72, cy, iw-0.3, 0.58, anchor=MSO_ANCHOR.MIDDLE)
+rect(s, 6.83, cy, iw, 0.58, fill="EAF3EE", rounded=True, rad=0.06)
+text(s, [[("躺床休息 → 不报警　", {"color":OKGRN,"bold":True,"size":13}),
+          ("横躺≠跌倒，需事件动态判别", {"color":INK,"size":11.5})]],
+     7.00, cy, iw-0.3, 0.58, anchor=MSO_ANCHOR.MIDDLE)
+
+# 底部结果条
+by = cy+0.72
+rect(s, 0.55, by, 12.23, 0.60, fill=DEEP, rounded=True, rad=0.06)
+text(s, [[("真实视频 16 段实测：", {"color":"CFE0EA","size":13}),
+          ("跌倒 7/8 报警（召回 0.875）", {"color":WHITE,"bold":True,"size":14}),
+          ("　·　日常 1/8 误报　·　端到端结果与骨骼消融一致，验证整条流水线在原始视频上有效",
+           {"color":"CFE0EA","size":12}) ]],
+     0.85, by, 11.6, 0.60, anchor=MSO_ANCHOR.MIDDLE)
+footer(s)
+
+# ======================================================================
 # 14 部署与落地（评分维度4）
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 13, "端侧部署链路与落地价值")
+y = header(s, 14, "端侧部署链路与落地价值")
 steps=[("导出 ONNX","两阶段 opset12\n算子规整"),
        ("厂商工具转换","海思 ATC→.om\n瑞芯微 →.rknn"),
        ("INT8 量化","权重/激活量化\nNPU 加速"),
