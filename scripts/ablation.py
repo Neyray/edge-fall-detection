@@ -79,7 +79,8 @@ def process_clip(path, model, window, thr, fps, lie_list):
         a_geo |= geo["score"] >= thr
         a_fus |= fused >= thr
         for ls, fsm in fsms.items():
-            if fsm.update(fused, is_lying)["newly_triggered"]:
+            # 传入竖直下坠速度，启用「先下坠」门控（与线上 pipeline 行为一致）
+            if fsm.update(fused, is_lying, vy=geo["vertical_velocity"])["newly_triggered"]:
                 a_sm[ls] = True
     out = dict(stgcn=a_st, geo=a_geo, fused=a_fus)
     for ls in lie_list:

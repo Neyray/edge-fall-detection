@@ -3,9 +3,14 @@ torch>=2.0
 ultralytics>=8.1
 numpy>=1.24
 pyyaml>=6.0
+pandas>=2.0          # 真实数据脚本 csv2npz / prepare_real 解析骨骼 CSV
+lap>=0.5.12          # ultralytics 多目标跟踪(model.track)的关联算法，缺失会直接报错
 
 # 视频/演示（可选）
 opencv-python>=4.8
+
+# PPT 生成（可选）
+python-pptx>=0.6.21
 
 # 端侧导出（可选）
 onnx>=1.15

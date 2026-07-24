@@ -163,9 +163,10 @@ text(s, "端到端纯视觉方案：YOLO-Pose 轻量骨骼  +  Lite ST-GCN 时�
      0.85, 3.95, 8.2, 0.8, size=16, color="AECBDC")
 # 成果高亮条（开场即亮真实结果）
 rect(s, 0.85, 4.68, 7.9, 0.6, fill="123A2E", rounded=True, rad=0.12)
-text(s, [[("✓ 真实视频端到端实测　", {"color":"6FD6B4","bold":True,"size":13.5}),
-          ("跌倒召回 ", {"color":"9FBACB","size":13}), ("0.875", {"color":WHITE,"bold":True,"size":18}),
-          ("　·　误报 ", {"color":"9FBACB","size":13}), ("0.125", {"color":WHITE,"bold":True,"size":18})]],
+text(s, [[("✓ 真实数据事件级实测　", {"color":"6FD6B4","bold":True,"size":13.5}),
+          ("召回 ", {"color":"9FBACB","size":13}), ("0.880", {"color":WHITE,"bold":True,"size":18}),
+          ("　·　误报率 ", {"color":"9FBACB","size":13}), ("0.093", {"color":WHITE,"bold":True,"size":18}),
+          ("　(600 段留出片段)", {"color":"9FBACB","size":11})]],
      1.15, 4.68, 7.4, 0.6, anchor=MSO_ANCHOR.MIDDLE)
 # 底部信息条
 rect(s, 0.85, 5.5, 7.9, 0.9, fill="12314A", rounded=True, rad=0.1)
@@ -282,7 +283,7 @@ text(s, "这一「表征降维」是同时满足检测精度与端侧算力约�
 # 底部：思路 → 结果（把设计直接连到实测数字）
 rect(s, 0.7, 6.02, 12.0, 0.74, fill="123A2E", rounded=True, rad=0.09)
 maps=[("骨骼解耦","跨域长尾鲁棒"),("时序轻量","3M 参数 / <2ms"),
-      ("几何+状态机","误报 0.57→0.15、召回 0.875")]
+      ("几何+状态机","误报 0.57→0.09、召回 0.880")]
 for i,(a,b) in enumerate(maps):
     x=0.9+i*3.98
     text(s, [[(a, {"color":"6FD6B4","bold":True,"size":13.5}), ("  →  ", {"color":"E8A05A","bold":True,"size":14}),
@@ -436,9 +437,9 @@ text(s, [[("躺床休息 → 不报警　", {"color":OKGRN,"bold":True,"size":13
 # 底部结果条
 by = cy+0.72
 rect(s, 0.55, by, 12.23, 0.60, fill=DEEP, rounded=True, rad=0.06)
-text(s, [[("真实视频 16 段实测：", {"color":"CFE0EA","size":13}),
-          ("跌倒 7/8 报警（召回 0.875）", {"color":WHITE,"bold":True,"size":14}),
-          ("　·　日常 1/8 误报　·　完整链路在真实视频上端到端跑通，跌倒事件级检测可靠（详细指标见后）",
+text(s, [[("真实视频 14 段（全部未参与训练）：", {"color":"CFE0EA","size":13}),
+          ("跌倒 6/7 报警 · 日常 0/7 误报", {"color":WHITE,"bold":True,"size":14}),
+          ("　·　样本量小，仅证明完整链路跑通；泛化指标以后页 600 段事件级消融为准",
            {"color":"CFE0EA","size":12}) ]],
      0.85, by, 11.6, 0.60, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
@@ -464,7 +465,7 @@ footer(s)
 # 11 长尾泛化与数据增强
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 10, "长尾泛化与数据增强", "公开数据以可见光为主 —— 训练期「合成」红外与恶劣场景，零采集成本")
+y = header(s, 10, "长尾泛化：增强手段 + 真实实测", "已实现合成增强并做了 60 段退化实测 —— 结论如实呈现，不回避短板")
 img_aug=[("类红外合成","转灰度+伽马，模拟热成像"),("微光/夜间","整体压暗+传感器噪声")]
 skel_aug=[("关键点遮挡","随机清零若干点置信度"),("左右镜像换视角","水平翻转+左右点交换"),
           ("坐标抖动","模拟定位噪声"),("时间尺度缩放","模拟跌倒快慢差异")]
@@ -481,10 +482,28 @@ for i,(a,b) in enumerate(skel_aug):
     rect(s, x, yy, 2.85, 0.85, fill=CARD, rounded=True, rad=0.08)
     text(s, a, x+0.2, yy+0.1, 2.6, 0.5, size=13, color=INK, bold=True)
     text(s, b, x+0.2, yy+0.5, 2.65, 0.3, size=11, color=MUTED)
-rect(s, 0.7, y+2.75, 11.95, 0.95, fill="EAF3EE", rounded=True, rad=0.06)
-text(s, [[("骨骼表征对光照/纹理天然解耦  +  合成增强覆盖长尾  ", {"color":OKGRN,"bold":True,"size":14.5}),
-          ("→  在微光、夜间红外、遮挡、多机位下保持召回、抑制误报", {"color":INK,"size":13.5})]],
-     0.95, y+2.75, 11.5, 0.95, anchor=MSO_ANCHOR.MIDDLE)
+# 长尾实测（60 段留出视频，事件级，RTX 4090）—— 成果为主、短板为辅
+rect(s, 0.7, y+2.5, 11.95, 0.52, fill="EAF3EE", rounded=True, rad=0.06)
+text(s, [[("✓ 实测成果　", {"color":OKGRN,"bold":True,"size":13.5}),
+          ("60 段留出视频 × 4 退化条件（红外/微光/遮挡）云端实测；", {"color":INK,"size":12.5}),
+          ("误报率全程 0.03–0.07 —— 判别逻辑跨域鲁棒", {"color":OKGRN,"bold":True,"size":12.5})]],
+     0.9, y+2.5, 11.6, 0.52, anchor=MSO_ANCHOR.MIDDLE)
+lt=[("干净",  "0.80", "0.033", OKGRN),
+    ("类红外","0.60", "0.067", GOLD),
+    ("微光",  "0.53", "0.033", GOLD),
+    ("遮挡",  "0.27", "0.033", ALARM)]
+for i,(nm,rc,fp,col) in enumerate(lt):
+    x=0.7+i*3.0
+    rect(s, x, y+3.16, 2.85, 0.92, fill=CARD, rounded=True, rad=0.06)
+    rect(s, x, y+3.16, 0.12, 0.92, fill=col)
+    text(s, nm, x+0.28, y+3.22, 2.4, 0.28, size=12, color=INK, bold=True)
+    text(s, [[("召回 ", {"color":MUTED,"size":10.5}), (rc, {"color":col,"bold":True,"size":18})]],
+         x+0.28, y+3.48, 2.5, 0.4, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, "误报率 "+fp, x+0.28, y+3.82, 2.5, 0.22, size=10, color=OKGRN)
+text(s, [[("短板（如实）：", {"color":MUTED,"bold":True,"size":11}),
+          ("召回随退化下降（遮挡 0.27），根因在阶段一 YOLO 未做红外微调 —— 用合成红外数据微调即可回升，改进路径见部署页。",
+           {"color":MUTED,"size":11})]],
+     0.75, y+4.2, 11.9, 0.4, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
 
 # ======================================================================
@@ -552,8 +571,13 @@ for i,r in enumerate(d2):
         rect(s, c2[j], yy, w2[j], 0.5, fill=bg, line=LINE, lw=0.5)
         text(s, r[j], c2[j]+0.12, yy, w2[j]-0.2, 0.5, size=12.5,
              color=INK, bold=(i==2), anchor=MSO_ANCHOR.MIDDLE)
-text(s, "* 桌面 GPU 时延仅供比例参考；端侧 NPU(海思/瑞芯微)真实时延需目标板量化后实测。",
-     0.7, my+2.55, 12, 0.3, size=11, color=MUTED, italic=True)
+rect(s, 0.7, my+2.5, 12.23, 0.5, fill="FBF4E6", rounded=True, rad=0.06)
+text(s, [[("已验证：", {"color":OKGRN,"bold":True,"size":11.5}),
+          ("参数量/权重大小（硬件无关，已核对）　", {"color":INK,"size":11}),
+          ("待验证：", {"color":ALARM,"bold":True,"size":11.5}),
+          ("端侧 NPU 真实时延需目标板 INT8 量化后实测，桌面时延仅供比例参考",
+           {"color":INK,"size":11})]],
+     0.9, my+2.5, 11.9, 0.5, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
 
 # ======================================================================
@@ -593,8 +617,8 @@ for j,h in enumerate(th):
 abl=[("仅 ST-GCN","0.997","0.634","0.573","0.775",False),
      ("仅 几何先验","0.843","0.797","0.213","0.820",False),
      ("融合（无状态机）","0.987","0.822","0.213","0.897",False),
-     ("融合 + 状态机（倒地≥0.15s）","0.886","0.858","0.147","0.872",True),
-     ("融合 + 状态机（倒地≥0.4s）","0.722","0.857","0.120","0.784",False)]
+     ("融合 + 状态机（下坠+倒地≥0.15s）","0.880","0.904","0.093","0.892",True),
+     ("融合 + 状态机（下坠+倒地≥0.4s）","0.719","0.907","0.073","0.802",False)]
 for i,r in enumerate(abl):
     yy=ty+0.42+i*0.42
     hi=r[5]
@@ -606,7 +630,7 @@ for i,r in enumerate(abl):
              size=11, color=(GOLD if hi and j==0 else INK), bold=hi, align=al, anchor=MSO_ANCHOR.MIDDLE)
 rect(s, 0.7, ty+2.60, 11.95, 0.44, fill="EAF3EE", rounded=True, rad=0.06)
 text(s, [[("几何融合 误报率 0.57→0.21，", {"color":OKGRN,"bold":True,"size":12}),
-          ("状态机再降至 0.12–0.15 且「召回↔误报」可调 —— 每个模块的价值均被验证。", {"color":INK,"size":12})]],
+          ("「先下坠 + 持续倒地」状态机再降至 0.07–0.09 且几乎不掉召回 —— 每个模块的价值均被验证。", {"color":INK,"size":12})]],
      0.95, ty+2.60, 11.5, 0.44, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
 
@@ -614,7 +638,7 @@ footer(s)
 # 14 部署与落地（评分维度4）
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 14, "端侧部署链路与落地价值")
+y = header(s, 14, "端侧部署链路与落地价值", "当前状态：部署链路「就绪」——ONNX 导出已跑通；.om/.rknn 转换与板端时延为待验证项")
 steps=[("导出 ONNX","两阶段 opset12\n算子规整"),
        ("厂商工具转换","海思 ATC→.om\n瑞芯微 →.rknn"),
        ("INT8 量化","权重/激活量化\nNPU 加速"),

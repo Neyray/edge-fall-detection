@@ -68,10 +68,13 @@ def draw(frame, res):
 
 def run_video(det, path, out_path):
     cap = cv2.VideoCapture(path)
-    det.reset()
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    f = cap.get(cv2.CAP_PROP_FPS) or args.fps
+    f = cap.get(cv2.CAP_PROP_FPS)
+    if not f or f <= 0 or f != f:      # 读不到或 NaN 时回退
+        f = args.fps
+    # 用本视频的真实帧率重建状态机（"持续N秒"与下坠速度都依赖帧率）
+    det.set_fps(f)
     vw = cv2.VideoWriter(out_path, cv2.VideoWriter_fourcc(*"mp4v"), f, (w, h))
     ever, nframe = False, 0
     while True:

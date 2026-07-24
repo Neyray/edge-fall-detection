@@ -45,7 +45,10 @@ def run_video(source, weights, ckpt, save):
     cap = cv2.VideoCapture(int(source) if str(source).isdigit() else source)
     if not cap.isOpened():
         raise SystemExit(f"无法打开视频源: {source}")
-    fps = cap.get(cv2.CAP_PROP_FPS) or 30
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if not fps or fps <= 0 or fps != fps:      # 读不到或 NaN 时回退 30
+        fps = 30.0
+    det.set_fps(fps)   # 用真实帧率驱动状态机("持续N秒"/下坠速度均依赖帧率)
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     writer = None

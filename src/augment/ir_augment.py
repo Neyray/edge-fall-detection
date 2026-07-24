@@ -32,6 +32,21 @@ def low_light(img: np.ndarray, factor: float = 0.35, noise_std: float = 8.0) -> 
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
+def occlusion_patch(img: np.ndarray, box) -> np.ndarray:
+    """图像域遮挡：把指定矩形涂黑，模拟家具/门框等静态遮挡物挡住部分人体。
+
+    box 为 (x0, y0, w, h) 像素坐标。整段视频用同一个 box，才符合"静态遮挡物"的物理常识
+    （逐帧随机反而不真实，也会让指标失真）。
+    """
+    out = img.copy()
+    x0, y0, w, h = [int(v) for v in box]
+    x1, y1 = min(out.shape[1], x0 + w), min(out.shape[0], y0 + h)
+    x0, y0 = max(0, x0), max(0, y0)
+    if x1 > x0 and y1 > y0:
+        out[y0:y1, x0:x1] = 0
+    return out
+
+
 # ---------------- 骨骼域增强（第二阶段时序模型） ----------------
 
 def random_joint_occlusion(kp_seq: np.ndarray, max_joints: int = 4,

@@ -1,11 +1,15 @@
 {
-  "videos": 16,
-  "fall": 8,
-  "adl": 8,
-  "fall_alarmed": 7,
-  "adl_false_alarm": 1,
-  "recall": 0.875,
-  "false_positive_rate": 0.125,
+  "videos": 14,
+  "fall": 7,
+  "adl": 7,
+  "fall_alarmed": 6,
+  "adl_false_alarm": 0,
+  "recall": 0.857,
+  "false_positive_rate": 0.0,
   "lie_seconds": 0.2,
-  "note": "完整端到端(YOLO-Pose→ST-GCN→几何→状态机) 在真实视频上，CPU 4线程"
+  "excluded_trainset_clips": [
+    "20240912_101626.mp4",
+    "B_D_0002.mp4"
+  ],
+  "note": "全部14段均未参与训练；样本量小仅证明链路跑通，泛化指标以600段事件级消融为准"
 }
