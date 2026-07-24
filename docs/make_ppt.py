@@ -164,9 +164,9 @@ text(s, "端到端纯视觉方案：YOLO-Pose 轻量骨骼  +  Lite ST-GCN 时�
 # 成果高亮条（开场即亮真实结果）
 rect(s, 0.85, 4.68, 7.9, 0.6, fill="123A2E", rounded=True, rad=0.12)
 text(s, [[("✓ 真实数据事件级实测　", {"color":"6FD6B4","bold":True,"size":13.5}),
-          ("召回 ", {"color":"9FBACB","size":13}), ("0.880", {"color":WHITE,"bold":True,"size":18}),
-          ("　·　误报率 ", {"color":"9FBACB","size":13}), ("0.093", {"color":WHITE,"bold":True,"size":18}),
-          ("　(600 段留出片段)", {"color":"9FBACB","size":11})]],
+          ("召回 ", {"color":"9FBACB","size":13}), ("0.860", {"color":WHITE,"bold":True,"size":18}),
+          ("　·　误报率 ", {"color":"9FBACB","size":13}), ("0.082", {"color":WHITE,"bold":True,"size":18}),
+          ("　(1200 段留出片段)", {"color":"9FBACB","size":11})]],
      1.15, 4.68, 7.4, 0.6, anchor=MSO_ANCHOR.MIDDLE)
 # 底部信息条
 rect(s, 0.85, 5.5, 7.9, 0.9, fill="12314A", rounded=True, rad=0.1)
@@ -283,7 +283,7 @@ text(s, "这一「表征降维」是同时满足检测精度与端侧算力约�
 # 底部：思路 → 结果（把设计直接连到实测数字）
 rect(s, 0.7, 6.02, 12.0, 0.74, fill="123A2E", rounded=True, rad=0.09)
 maps=[("骨骼解耦","跨域长尾鲁棒"),("时序轻量","3M 参数 / <2ms"),
-      ("几何+状态机","误报 0.57→0.09、召回 0.880")]
+      ("几何+状态机","误报 0.62→0.08、召回 0.860")]
 for i,(a,b) in enumerate(maps):
     x=0.9+i*3.98
     text(s, [[(a, {"color":"6FD6B4","bold":True,"size":13.5}), ("  →  ", {"color":"E8A05A","bold":True,"size":14}),
@@ -501,7 +501,7 @@ for i,(nm,rc,fp,col) in enumerate(lt):
          x+0.28, y+3.48, 2.5, 0.4, anchor=MSO_ANCHOR.MIDDLE)
     text(s, "误报率 "+fp, x+0.28, y+3.82, 2.5, 0.22, size=10, color=OKGRN)
 text(s, [[("短板（如实）：", {"color":MUTED,"bold":True,"size":11}),
-          ("召回随退化下降（遮挡 0.27），根因在阶段一 YOLO 未做红外微调 —— 用合成红外数据微调即可回升，改进路径见部署页。",
+          ("召回随退化下降（遮挡 0.27），根因在阶段一 YOLO 感知端；已试伪标签域微调，净收益为负（已归因，文档有据），正解需真实红外标注+冻结主干微调。",
            {"color":MUTED,"size":11})]],
      0.75, y+4.2, 11.9, 0.4, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
@@ -589,8 +589,8 @@ y = header(s, 13, "真实数据验证与消融", "Kaggle payutch/fall-video-data
 # 上排左：数据划分
 text(s, "数据划分（按视频片段划分，同一片段不跨集）", 0.7, y, 6, 0.32, size=13.5, color=DEEP, bold=True)
 split=[("数据来源","Kaggle 真实视频抽取骨骼 6988 段"),
-       ("训练集","跌倒 1200 + 日常 1200 段 → 8122 窗口(均衡)"),
-       ("验证集","跌倒 300 + 日常 300 段 → 2100 窗口(均衡)")]
+       ("训练集","跌倒 2400 + 日常 2400 段 → 16632 窗口(均衡)"),
+       ("验证集","跌倒 600 + 日常 600 段 → 4188 窗口(均衡)")]
 for i,(a,b) in enumerate(split):
     yy=y+0.37+i*0.44
     rect(s, 0.7, yy, 5.95, 0.40, fill=CARD, rounded=True, rad=0.06)
@@ -599,7 +599,7 @@ for i,(a,b) in enumerate(split):
 
 # 上排右：阶段2窗口级指标
 text(s, "阶段2 时序头 · 窗口级", 6.95, y, 5.6, 0.32, size=13.5, color=DEEP, bold=True)
-wl=[("0.844","准确率"),("0.840","召回率"),("0.847","精确率"),("0.844","F1")]
+wl=[("0.853","准确率"),("0.843","召回率"),("0.860","精确率"),("0.852","F1")]
 for i,(n,l) in enumerate(wl):
     x=6.95+i*1.47
     rect(s, x, y+0.37, 1.37, 0.98, fill="EAF3EE", rounded=True, rad=0.08)
@@ -614,11 +614,11 @@ cols=[0.7,5.3,7.2,9.1,11.2]; cw=[4.5,1.8,1.8,2.0,1.45]
 for j,h in enumerate(th):
     rect(s, cols[j], ty, cw[j], 0.42, fill=DEEP)
     text(s, h, cols[j]+0.1, ty, cw[j]-0.15, 0.42, size=12, color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
-abl=[("仅 ST-GCN","0.997","0.634","0.573","0.775",False),
-     ("仅 几何先验","0.843","0.797","0.213","0.820",False),
-     ("融合（无状态机）","0.987","0.822","0.213","0.897",False),
-     ("融合 + 状态机（下坠+倒地≥0.15s）","0.880","0.904","0.093","0.892",True),
-     ("融合 + 状态机（下坠+倒地≥0.4s）","0.719","0.907","0.073","0.802",False)]
+abl=[("仅 ST-GCN","0.988","0.616","0.615","0.759",False),
+     ("仅 几何先验","0.843","0.804","0.205","0.823",False),
+     ("融合（无状态机）","0.977","0.818","0.217","0.890",False),
+     ("融合 + 状态机（下坠+倒地≥0.15s）","0.860","0.913","0.082","0.886",True),
+     ("融合 + 状态机（下坠+倒地≥0.4s）","0.708","0.916","0.065","0.798",False)]
 for i,r in enumerate(abl):
     yy=ty+0.42+i*0.42
     hi=r[5]
@@ -629,8 +629,8 @@ for i,r in enumerate(abl):
         text(s, r[j], cols[j]+(0.12 if j==0 else 0), yy, cw[j]-(0.15 if j==0 else 0), 0.42,
              size=11, color=(GOLD if hi and j==0 else INK), bold=hi, align=al, anchor=MSO_ANCHOR.MIDDLE)
 rect(s, 0.7, ty+2.60, 11.95, 0.44, fill="EAF3EE", rounded=True, rad=0.06)
-text(s, [[("几何融合 误报率 0.57→0.21，", {"color":OKGRN,"bold":True,"size":12}),
-          ("「先下坠 + 持续倒地」状态机再降至 0.07–0.09 且几乎不掉召回 —— 每个模块的价值均被验证。", {"color":INK,"size":12})]],
+text(s, [[("几何融合 误报率 0.62→0.22，", {"color":OKGRN,"bold":True,"size":12}),
+          ("「先下坠 + 持续倒地」状态机再降至 0.065–0.082 且几乎不掉召回 —— 每个模块的价值均被验证。", {"color":INK,"size":12})]],
      0.95, ty+2.60, 11.5, 0.44, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
 

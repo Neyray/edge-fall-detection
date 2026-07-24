@@ -1,0 +1,21 @@
+{
+  "samples": 4188,
+  "accuracy": 0.8531518624641834,
+  "recall": 0.8433619866284623,
+  "precision": 0.8602045786653677,
+  "f1": 0.8517000241138172,
+  "false_positive_rate": 0.13705826170009552,
+  "false_negative_rate": 0.15663801337153774,
+  "confusion": {
+    "tp": 1766,
+    "fp": 287,
+    "tn": 1807,
+    "fn": 328
+  },
+  "temporal_latency_ms_per_window": 0.5525529216087691,
+  "device": "cpu",
+  "checkpoint": "checkpoints/stgcn_fall_big.pt",
+  "data": "data/skeletons/val_big",
+  "window": 30,
+  "model_params_M": 0.158056
+}
