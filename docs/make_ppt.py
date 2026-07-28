@@ -198,13 +198,14 @@ items = [("01","赛题背景与场景痛点"),("02","三大技术挑战与硬性
          ("07","几何先验与状态机降误报"),("08","端到端实测 · Demo"),
          ("09","针对痛点的专属优化"),("10","长尾泛化与数据增强"),
          ("11","创新性 · 对比业界"),("12","实测结果与合规核对"),
-         ("13","真实数据验证与消融"),("14","端侧部署与落地价值")]
+         ("13","真实数据验证与消融"),("14","端侧部署与落地价值"),
+         ("15","下一步优化路线与展望")]
 for i,(n,t) in enumerate(items):
     col = i % 2; row = i // 2
-    x = 0.9 + col*6.1; y = 1.95 + row*0.82
-    circle(s, x, y, 0.52, TEAL if col==0 else DEEP)
-    text(s, n, x, y, 0.52, 0.52, size=14, color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
-    text(s, t, x+0.72, y, 5.2, 0.52, size=16.5, color=INK, anchor=MSO_ANCHOR.MIDDLE)
+    x = 0.9 + col*6.1; y = 1.68 + row*0.67
+    circle(s, x, y, 0.48, TEAL if col==0 else DEEP)
+    text(s, n, x, y, 0.48, 0.48, size=13, color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, t, x+0.68, y, 5.2, 0.48, size=15.5, color=INK, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
 
 # ======================================================================
@@ -666,7 +667,37 @@ for i,(a,b) in enumerate([("贴合真实看护","居家养老场景本地实时�
 footer(s)
 
 # ======================================================================
-# 15 结尾
+# 15 下一步优化路线（把短板转成有优先级的改进计划）
+# ======================================================================
+s = slide(WHITE)
+y = header(s, 15, "下一步优化路线与展望", "每一项都源于本轮实测发现 —— 有依据、有优先级，不是空想")
+road=[("P0", ALARM, "感知端红外/微光微调",
+       "长尾遮挡召回仅 0.27；朴素伪标签自蒸馏已验证净负、排除弯路",
+       "真实红外标注数据 + 冻结主干只训 pose 头 + 遮挡专项增强"),
+      ("P0", ALARM, "NPU 端侧落地实测",
+       "目前仅 ONNX 导出跑通，缺板端真实证据",
+       "海思/瑞芯微 INT8 量化 → .om/.rknn，实测板端时延与功耗"),
+      ("P1", GOLD, "多人跟踪鲁棒性",
+       "已修 track-id 混淆漏洞，复杂多人交叠仍需加强",
+       "轻量 ReID + 轨迹平滑，验证多人交叠遮挡场景"),
+      ("P1", GOLD, "数据规模与跨域泛化",
+       "现用 3000/类、机位有限",
+       "扩至全量 6988 段 + 跨机位/跨场景泛化评测")]
+for i,(pr,col,t,ev,ac) in enumerate(road):
+    yy=y+i*1.22
+    rect(s, 0.7, yy, 11.95, 1.06, fill=CARD, rounded=True, rad=0.06)
+    rect(s, 0.7, yy, 0.14, 1.06, fill=col)
+    rect(s, 0.98, yy+0.32, 0.85, 0.44, fill=col, rounded=True, rad=0.14)
+    text(s, pr, 0.98, yy+0.32, 0.85, 0.44, size=14, color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, t, 2.05, yy+0.11, 10.3, 0.32, size=15, color=DEEP, bold=True)
+    text(s, [[("依据　", {"color":col,"bold":True,"size":11}), (ev, {"color":MUTED,"size":11})]],
+         2.05, yy+0.46, 10.5, 0.28, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, [[("做法　", {"color":OKGRN,"bold":True,"size":11.5}), (ac, {"color":INK,"size":11.5})]],
+         2.05, yy+0.72, 10.5, 0.3, anchor=MSO_ANCHOR.MIDDLE)
+footer(s)
+
+# ======================================================================
+# 16 结尾
 # ======================================================================
 s = slide(NAVY)
 kicker(s, "总结  SUMMARY", 0.6, 1.0, color="6FB4D6")
