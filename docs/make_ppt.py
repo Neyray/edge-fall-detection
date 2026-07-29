@@ -163,7 +163,7 @@ text(s, "端到端纯视觉方案：YOLO-Pose 轻量骨骼  +  Lite ST-GCN 时�
      0.85, 3.95, 8.2, 0.8, size=16, color="AECBDC")
 # 成果高亮条（开场即亮真实结果）
 rect(s, 0.85, 4.68, 7.9, 0.6, fill="123A2E", rounded=True, rad=0.12)
-text(s, [[("✓ 真实数据事件级实测　", {"color":"6FD6B4","bold":True,"size":13.5}),
+text(s, [[("真实数据事件级实测　", {"color":"6FD6B4","bold":True,"size":13.5}),
           ("召回 ", {"color":"9FBACB","size":13}), ("0.860", {"color":WHITE,"bold":True,"size":18}),
           ("　·　误报率 ", {"color":"9FBACB","size":13}), ("0.082", {"color":WHITE,"bold":True,"size":18}),
           ("　(1200 段留出片段)", {"color":"9FBACB","size":11})]],
@@ -410,7 +410,7 @@ text(s, "只有「先下坠 + 持续倒地 ≥1.5s」才确认——\n快速坐�
 footer(s)
 
 # ======================================================================
-# 08 端到端实测 Demo（评分维度1）—— 方法之后立刻"眼见为实"
+# 08 端到端实测 Demo（评分维度1）
 # ======================================================================
 s = slide(WHITE)
 y = header(s, 8, "端到端实测 · Demo", "完整链路 YOLO-Pose → ST-GCN → 几何先验 → 状态机，在真实视频上跑通（CPU 4线程实测）")
@@ -466,7 +466,7 @@ footer(s)
 # 11 长尾泛化与数据增强
 # ======================================================================
 s = slide(WHITE)
-y = header(s, 10, "长尾泛化：增强手段 + 真实实测", "已实现合成增强并做了 60 段退化实测 —— 结论如实呈现，不回避短板")
+y = header(s, 10, "长尾泛化：增强手段 + 真实实测", "已实现合成增强，并在 60 段退化视频上实测（含短板）")
 img_aug=[("类红外合成","转灰度+伽马，模拟热成像"),("微光/夜间","整体压暗+传感器噪声")]
 skel_aug=[("关键点遮挡","随机清零若干点置信度"),("左右镜像换视角","水平翻转+左右点交换"),
           ("坐标抖动","模拟定位噪声"),("时间尺度缩放","模拟跌倒快慢差异")]
@@ -485,7 +485,7 @@ for i,(a,b) in enumerate(skel_aug):
     text(s, b, x+0.2, yy+0.5, 2.65, 0.3, size=11, color=MUTED)
 # 长尾实测（60 段留出视频，事件级，RTX 4090）—— 成果为主、短板为辅
 rect(s, 0.7, y+2.5, 11.95, 0.52, fill="EAF3EE", rounded=True, rad=0.06)
-text(s, [[("✓ 实测成果　", {"color":OKGRN,"bold":True,"size":13.5}),
+text(s, [[("实测成果　", {"color":OKGRN,"bold":True,"size":13.5}),
           ("60 段留出视频 × 4 退化条件（红外/微光/遮挡）云端实测；", {"color":INK,"size":12.5}),
           ("误报率全程 0.03–0.07 —— 判别逻辑跨域鲁棒", {"color":OKGRN,"bold":True,"size":12.5})]],
      0.9, y+2.5, 11.6, 0.52, anchor=MSO_ANCHOR.MIDDLE)
@@ -501,8 +501,8 @@ for i,(nm,rc,fp,col) in enumerate(lt):
     text(s, [[("召回 ", {"color":MUTED,"size":10.5}), (rc, {"color":col,"bold":True,"size":18})]],
          x+0.28, y+3.48, 2.5, 0.4, anchor=MSO_ANCHOR.MIDDLE)
     text(s, "误报率 "+fp, x+0.28, y+3.82, 2.5, 0.22, size=10, color=OKGRN)
-text(s, [[("短板（如实）：", {"color":MUTED,"bold":True,"size":11}),
-          ("召回随退化下降（遮挡 0.27），根因在阶段一 YOLO 感知端；已试伪标签域微调，净收益为负（已归因，文档有据），正解需真实红外标注+冻结主干微调。",
+text(s, [[("短板：", {"color":MUTED,"bold":True,"size":11}),
+          ("召回随退化下降（遮挡 0.27），根因在阶段一 YOLO 感知端；已试伪标签域微调，净收益为负，正解需真实红外标注+冻结主干微调。",
            {"color":MUTED,"size":11})]],
      0.75, y+4.2, 11.9, 0.4, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
@@ -550,7 +550,6 @@ comp=[("3.03 M","总参数 ≤20M","15% 占用",OKGRN),
 for i,(n,l1,l2,col) in enumerate(comp):
     x=0.7+i*3.0
     rect(s, x, y, 2.8, 1.75, fill=CARD, rounded=True, rad=0.08)
-    text(s, "✓", x+0.2, y+0.15, 0.5, 0.4, size=15, color=col, bold=True)
     text(s, n, x, y+0.42, 2.8, 0.6, size=27, color=DEEP, bold=True, align=PP_ALIGN.CENTER, font=TITLE_FONT)
     text(s, l1, x, y+1.05, 2.8, 0.3, size=12.5, color=INK, align=PP_ALIGN.CENTER, bold=True)
     text(s, l2, x, y+1.36, 2.8, 0.3, size=11, color=col, align=PP_ALIGN.CENTER)
@@ -662,7 +661,7 @@ for i,(a,b) in enumerate([("贴合真实看护","居家养老场景本地实时�
                           ("可复现","配套部署代码+使用说明，一键跑通")]):
     x=0.7+i*4.05
     rect(s, x, vy+0.5, 3.75, 1.15, fill=CARD, rounded=True, rad=0.08)
-    text(s, "✓ "+a, x+0.25, vy+0.65, 3.4, 0.4, size=14, color=OKGRN, bold=True)
+    text(s, a, x+0.25, vy+0.65, 3.4, 0.4, size=14, color=OKGRN, bold=True)
     text(s, b, x+0.25, vy+1.08, 3.4, 0.5, size=12, color=INK, spacing=1.05)
 footer(s)
 
@@ -704,12 +703,12 @@ kicker(s, "总结  SUMMARY", 0.6, 1.0, color="6FB4D6")
 text(s, "轻量 · 实时 · 鲁棒 · 可落地", 0.6, 1.5, 12, 0.9, size=36, color=WHITE, bold=True, font=TITLE_FONT)
 pts=[("骨骼中间表征","化解跨域与算力两难，从根源提升长尾鲁棒性"),
      ("学习+规则+事件三级融合","ST-GCN 时序 + 几何先验 + 状态机，稳、准、可解释"),
-     ("真实数据验证 + 全面达标","真实视频端到端 召回0.875/误报0.125；3M/12MB 远低于红线，代码已跑通"),
+     ("真实数据验证 + 全面达标","事件级 召回0.860/误报0.082；3M/12MB 远低于红线，代码已跑通"),
      ("端侧闭环落地","ONNX→NPU 部署链路完整，隐私安全、本地实时报警")]
 for i,(a,b) in enumerate(pts):
     yy=2.75+i*0.85
     circle(s, 0.7, yy, 0.5, ["1C7293","2E9E67","D89A2E","E4572E"][i])
-    text(s, "✓", 0.7, yy, 0.5,0.5, size=15, color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    text(s, str(i+1), 0.7, yy, 0.5,0.5, size=15, color=WHITE, bold=True, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
     text(s, [[(a+"　", {"color":WHITE,"bold":True,"size":17}), (b, {"color":"AECBDC","size":14})]],
          1.4, yy, 11, 0.5, anchor=MSO_ANCHOR.MIDDLE)
 rect(s, 0.7, 6.35, 11.95, 0.75, fill="12314A", rounded=True, rad=0.1)
