@@ -166,7 +166,7 @@ rect(s, 0.85, 4.68, 7.9, 0.6, fill="123A2E", rounded=True, rad=0.12)
 text(s, [[("真实数据事件级实测　", {"color":"6FD6B4","bold":True,"size":13.5}),
           ("召回 ", {"color":"9FBACB","size":13}), ("0.860", {"color":WHITE,"bold":True,"size":18}),
           ("　·　误报率 ", {"color":"9FBACB","size":13}), ("0.082", {"color":WHITE,"bold":True,"size":18}),
-          ("　(1200 段留出片段)", {"color":"9FBACB","size":11})]],
+          ("　(1199 段有效留出片段)", {"color":"9FBACB","size":11})]],
      1.15, 4.68, 7.4, 0.6, anchor=MSO_ANCHOR.MIDDLE)
 # 底部信息条
 rect(s, 0.85, 5.5, 7.9, 0.9, fill="12314A", rounded=True, rad=0.1)
@@ -486,8 +486,8 @@ for i,(a,b) in enumerate(skel_aug):
 # 长尾实测（60 段留出视频，事件级，RTX 4090）—— 成果为主、短板为辅
 rect(s, 0.7, y+2.5, 11.95, 0.52, fill="EAF3EE", rounded=True, rad=0.06)
 text(s, [[("实测成果　", {"color":OKGRN,"bold":True,"size":13.5}),
-          ("60 段留出视频 × 4 退化条件（红外/微光/遮挡）云端实测；", {"color":INK,"size":12.5}),
-          ("误报率全程 0.03–0.07 —— 判别逻辑跨域鲁棒", {"color":OKGRN,"bold":True,"size":12.5})]],
+          ("60段留出视频 × 4种合成退化（类红外/微光/遮挡）RTX 4090实测；", {"color":INK,"size":12.5}),
+          ("误报率0.03–0.07，但召回随退化下降", {"color":INK,"size":12.5})]],
      0.9, y+2.5, 11.6, 0.52, anchor=MSO_ANCHOR.MIDDLE)
 lt=[("干净",  "0.80", "0.033", OKGRN),
     ("类红外","0.60", "0.067", GOLD),
@@ -629,8 +629,8 @@ for i,r in enumerate(abl):
         text(s, r[j], cols[j]+(0.12 if j==0 else 0), yy, cw[j]-(0.15 if j==0 else 0), 0.42,
              size=11, color=(GOLD if hi and j==0 else INK), bold=hi, align=al, anchor=MSO_ANCHOR.MIDDLE)
 rect(s, 0.7, ty+2.60, 11.95, 0.44, fill="EAF3EE", rounded=True, rad=0.06)
-text(s, [[("几何融合 误报率 0.62→0.22，", {"color":OKGRN,"bold":True,"size":12}),
-          ("「先下坠 + 持续倒地」状态机再降至 0.065–0.082 且几乎不掉召回 —— 每个模块的价值均被验证。", {"color":INK,"size":12})]],
+text(s, [[("状态机（倒地持续0.15s）以召回下降11.7个百分点，", {"color":OKGRN,"bold":True,"size":12}),
+          ("将误报率0.217→0.082，F1仍为0.886——形成可控的召回—误报权衡。", {"color":INK,"size":12})]],
      0.95, ty+2.60, 11.5, 0.44, anchor=MSO_ANCHOR.MIDDLE)
 footer(s)
 
@@ -703,8 +703,8 @@ kicker(s, "总结  SUMMARY", 0.6, 1.0, color="6FB4D6")
 text(s, "轻量 · 实时 · 鲁棒 · 可落地", 0.6, 1.5, 12, 0.9, size=36, color=WHITE, bold=True, font=TITLE_FONT)
 pts=[("骨骼中间表征","化解跨域与算力两难，从根源提升长尾鲁棒性"),
      ("学习+规则+事件三级融合","ST-GCN 时序 + 几何先验 + 状态机，稳、准、可解释"),
-     ("真实数据验证 + 全面达标","事件级 召回0.860/误报0.082；3M/12MB 远低于红线，代码已跑通"),
-     ("端侧闭环落地","ONNX→NPU 部署链路完整，隐私安全、本地实时报警")]
+     ("真实数据验证 + 核心指标达标","事件级 召回0.860/误报0.082；3M/12MB 远低于红线，代码已跑通"),
+     ("端侧闭环落地","ONNX 导出已验证，NPU转换与板端实测待完成，隐私安全、本地实时报警")]
 for i,(a,b) in enumerate(pts):
     yy=2.75+i*0.85
     circle(s, 0.7, yy, 0.5, ["1C7293","2E9E67","D89A2E","E4572E"][i])

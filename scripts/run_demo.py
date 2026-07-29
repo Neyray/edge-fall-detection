@@ -94,7 +94,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--source", default=None)
     ap.add_argument("--weights", default="yolo11n-pose.pt")
-    ap.add_argument("--ckpt", default=None)
+    ap.add_argument("--ckpt", default="checkpoints/stgcn_fall.pt")
     ap.add_argument("--save", default=None)
     ap.add_argument("--synthetic", action="store_true")
     args = ap.parse_args()

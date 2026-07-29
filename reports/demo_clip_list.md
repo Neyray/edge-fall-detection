@@ -1,5 +1,9 @@
 # 端到端 Demo 视频清单（14 段，全部未参与训练）
 
+> **视频来源**：Kaggle `payutch/fall-video-dataset`  
+> 官方页面：<https://www.kaggle.com/datasets/payutch/fall-video-dataset>  
+> 下列文件均为该数据集中的原始可见光视频，不是自采视频，也不是合成视频。
+
 > 与训练集关系经脚本精确比对（复刻 prepare_real.py 的 seed=0 划分）。
 > 原始挑选的 16 段中，`20240912_101626.mp4` 与 `B_D_0002.mp4` 命中训练集，**已剔除**，移至 `data/demo_excluded_trainset/`。
 

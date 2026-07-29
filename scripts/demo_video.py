@@ -109,7 +109,7 @@ def main():
         name = os.path.basename(p)
         outp = os.path.join(args.out, f"demo_{name}")
         alarmed, nf = run_video(det, p, outp)
-        flag = "★报警" if alarmed else "—"
+        flag = "[报警]" if alarmed else "-"
         rows.append((truth, alarmed))
         print(f"{name:<32}  {truth}    {flag:<6}   {nf}")
 

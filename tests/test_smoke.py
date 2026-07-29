@@ -75,6 +75,27 @@ def test_state_machine_ignores_transient():
     print("[ok] 瞬时动作(快速坐下)未误报")
 
 
+def test_state_machine_requires_drop_for_static_lying():
+    """真实管线传入竖直速度时，静态躺卧不应被当成跌倒。"""
+    fsm = FallStateMachine(fps=30, prob_thr=0.6, lie_seconds=0.2)
+    for _ in range(60):
+        fsm.update(0.9, is_lying=True, vy=0.0)
+    assert not fsm.alarm and fsm.state == State.NORMAL
+    print("[ok] 静态躺卧未误报（缺少下坠证据）")
+
+
+def test_state_machine_drop_then_lying_triggers():
+    """出现下坠后持续倒地，应完成正常报警链路。"""
+    fsm = FallStateMachine(fps=30, prob_thr=0.6, lie_seconds=0.2)
+    fsm.update(0.9, is_lying=True, vy=0.6)
+    fired = False
+    for _ in range(20):
+        out = fsm.update(0.9, is_lying=True, vy=0.0)
+        fired = fired or out["newly_triggered"]
+    assert fired and fsm.state == State.FALLEN
+    print("[ok] 下坠后持续倒地触发报警")
+
+
 def test_pipeline_end_to_end():
     det = FallDetector(dummy_pose=True, window=30, fps=30.0)
     for _ in range(60):
@@ -87,4 +108,4 @@ if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:
         fn()
-    print(f"\n全部 {len(fns)} 项冒烟测试通过 ✓")
+    print(f"\n全部 {len(fns)} 项冒烟测试通过")
